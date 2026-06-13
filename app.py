@@ -17,13 +17,15 @@ def init_session_state():
         st.session_state.criteria_weights = {}
     if "analysis_results" not in st.session_state:
         st.session_state.analysis_results = None
+    if "hist_studies_for_ai" not in st.session_state:
+        st.session_state.hist_studies_for_ai = []
 
 init_session_state()
 
 # 3. Definicja stron za pomocą st.Page
 page_1 = st.Page(
     page="views/1_study_config.py",
-    title="1. Current Study Configuration",
+    title="1. Planned Study Definition",
     icon="📋",
     default=True
 )
@@ -31,7 +33,7 @@ page_1 = st.Page(
 page_2 = st.Page(
     page="views/2_criteria_weights.py",
     title="2. Search Criteria",
-    icon="⚖️"
+    icon="🔍"
 )
 
 page_3 = st.Page(
@@ -40,9 +42,16 @@ page_3 = st.Page(
     icon="📊"
 )
 
-# 4. Budowa menu nawigacyjnego
+# NOWOŚĆ: Definicja dedykowanej strony dla modułu Gemini AI
+page_4 = st.Page(
+    page="views/4_ai_benchmark.py",
+    title="4. AI Benchmark",
+    icon="🤖"
+)
+
+# 4. Budowa menu nawigacyjnego z uwzględnieniem nowej strony
 pg = st.navigation(
-    {"Process": [page_1, page_2, page_3]}
+    {"Process": [page_1, page_2, page_3, page_4]}
 )
 
 # 5. Dodatki w pasku bocznym widoczne na każdej stronie (opcjonalnie)

@@ -9,7 +9,7 @@ default_params = {
     "title": "",
     "indication": "",
     "sponsor_type": "Industry (Commercial)",
-    "phases": ["Phase 1"], # Zmienione na domyślną listę 1-elementową
+    "phases": ["Phase 1"],
     "date_range": (),
     "num_patients": 0,
     "num_sites": 0,
@@ -29,14 +29,11 @@ sponsor_options = list(CT_SPONSORS.keys())
 saved_sponsor = p.get("sponsor_type", "Industry (Commercial)")
 sponsor_idx = sponsor_options.index(saved_sponsor) if saved_sponsor in sponsor_options else 0
 
-# Wyciągamy pierwszą fazę z zapisanej listy (lub domyślnie Phase 1) na potrzeby single-select
 saved_phase_list = p.get("phases", ["Phase 1"])
 saved_phase = saved_phase_list[0] if saved_phase_list and saved_phase_list[0] in phase_options else phase_options[0]
 phase_idx = phase_options.index(saved_phase)
 
 with st.form("study_config_form"):
-    st.subheader("1. General Information")
-    
     title = st.text_input("Study Title*", value=p.get("title", ""))
     
     col1, col2 = st.columns(2)
@@ -45,7 +42,6 @@ with st.form("study_config_form"):
             "Indication (e.g., Oncology, Diabetes)*", 
             value=p.get("indication", "")
         )
-        # Zmiana na single select (st.selectbox)
         phase = st.selectbox(
             "Phase*", 
             options=phase_options,
@@ -64,9 +60,6 @@ with st.form("study_config_form"):
             help="Select the start and end dates by clicking twice on the calendar."
         )
 
-    st.markdown("---")
-    st.subheader("2. Operational Details")
-    
     col3, col4 = st.columns(2)
     with col3:
         num_patients = st.number_input(
@@ -83,21 +76,6 @@ with st.form("study_config_form"):
             value=p.get("num_sites", 0)
         )
 
-    st.markdown("---")
-    st.subheader("3. Protocol & Geography")
-    
-    inclusion_criteria = st.text_area(
-        "Inclusion Criteria", 
-        value=p.get("inclusion_criteria", ""),
-        height=100
-    )
-    
-    exclusion_criteria = st.text_area(
-        "Exclusion Criteria", 
-        value=p.get("exclusion_criteria", ""),
-        height=100
-    )
-    
     available_countries = [
         "Poland", "Germany", "Spain", "France", "USA", 
         "United Kingdom", "Czech Republic", "Hungary", "Romania"
@@ -108,13 +86,24 @@ with st.form("study_config_form"):
         default=p.get("countries", [])
     )
 
+    inclusion_criteria = st.text_area(
+        "Inclusion Criteria", 
+        value=p.get("inclusion_criteria", ""),
+        height=150
+    )
+    
+    exclusion_criteria = st.text_area(
+        "Exclusion Criteria", 
+        value=p.get("exclusion_criteria", ""),
+        height=150
+    )
+
     submitted = st.form_submit_button("Save Study Definition", type="primary")
 
     if submitted:
         missing_fields = []
         if not title.strip(): missing_fields.append("Study Title")
         if not indication.strip(): missing_fields.append("Indication")
-        # Pole 'phase' jako selectbox zawsze ma wartość, więc nie musimy go walidować na pustości
 
         if missing_fields:
             st.error(f"Please fill in the mandatory fields: **{', '.join(missing_fields)}**")
@@ -123,7 +112,7 @@ with st.form("study_config_form"):
                 "title": title,
                 "indication": indication,
                 "sponsor_type": sponsor_type,
-                "phases": [phase], # <-- Pakujemy pojedynczy wybór w listę dla kompatybilności ze Stroną 2
+                "phases": [phase],
                 "date_range": date_range,
                 "num_patients": num_patients,
                 "num_sites": num_sites,
@@ -131,5 +120,4 @@ with st.form("study_config_form"):
                 "exclusion_criteria": exclusion_criteria,
                 "countries": countries
             }
-            st.success("Study definition saved successfully! The profile is ready.")
-            st.info("Proceed to '2. API Query & Criteria' in the navigation menu.")
+            st.switch_page("views/2_criteria_weights.py")
