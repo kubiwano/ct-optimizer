@@ -6,7 +6,6 @@ class CTGovClient:
     BASE_URL = "https://clinicaltrials.gov/api/v2/studies"
 
     @staticmethod
-    # NOWOŚĆ: Dodany parametr min_primary_completion_date
     def fetch_studies(query_name: str, condition: str, phases: list, sponsor: str, statuses: list, start_date: str = None, min_primary_completion_date: str = None, limit: int = 1000):
         page_size = min(limit, 1000)
         
@@ -15,7 +14,8 @@ class CTGovClient:
             "filter.overallStatus": ",".join(statuses) if statuses else None,
             "pageSize": page_size,
             "format": "json",
-            "fields": "IdentificationModule,ConditionsModule,StatusModule,DesignModule,EligibilityModule,ContactsLocationsModule"
+            # NOWOŚĆ: Dodano 'SponsorCollaboratorsModule' do listy pobieranych pól!
+            "fields": "IdentificationModule,ConditionsModule,StatusModule,DesignModule,EligibilityModule,ContactsLocationsModule,SponsorCollaboratorsModule"
         }
 
         params = {k: v for k, v in params.items() if v is not None}
@@ -31,7 +31,7 @@ class CTGovClient:
         if start_date:
             advanced_terms.append(f"AREA[StartDate]RANGE[{start_date}, MAX]")
             
-        # NOWOŚĆ: Odcięcie po Primary Completion Date
+        # Odcięcie po Primary Completion Date
         if min_primary_completion_date:
             advanced_terms.append(f"AREA[PrimaryCompletionDate]RANGE[{min_primary_completion_date}, MAX]")
             

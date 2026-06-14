@@ -6,7 +6,7 @@ st.title("🔍 ClinicalTrials.gov Search Parameters")
 st.markdown("Define separate criteria for analyzing historical experience and tracking active competition. This dual approach ensures precise benchmarking.")
 
 if "study_params" not in st.session_state or not st.session_state.study_params.get("indication"):
-    st.warning("⚠️ No study parameters found. Please go back to '1. Planned Study Definition' and define your study first.")
+    st.warning("⚠️ No parameters found. Please go back to '1. Planned Study Definition' and define your study first.")
     st.stop()
 
 p = st.session_state.study_params

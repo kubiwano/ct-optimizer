@@ -9,7 +9,7 @@ api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
-def run_ai_table_scoring(planned_study, historical_studies):
+def run_ai_table_scoring(planned_study, historical_studies, custom_instructions=""):
     if not api_key or not historical_studies:
         return None
 
@@ -29,6 +29,11 @@ def run_ai_table_scoring(planned_study, historical_studies):
             
         context_trials += f"NCT ID: {nct_id}\nTitle: {title}\nCriteria:\n{criteria}\n\n"
 
+    # Dynamiczny blok z manualnymi instrukcjami użytkownika
+    custom_instructions_block = ""
+    if custom_instructions.strip():
+        custom_instructions_block = f"\n[USER CUSTOM INSTRUCTIONS]\nPAY EXTRA ATTENTION TO THE FOLLOWING USER REQUIREMENT WHEN SCORING:\n{custom_instructions}\n"
+
     prompt = f"""
     You are an expert Clinical Data Scientist. Analyze the similarity of the historical trials to our planned study based on inclusion/exclusion criteria.
     
@@ -40,7 +45,7 @@ def run_ai_table_scoring(planned_study, historical_studies):
 
     [HISTORICAL TRIALS DATA]
     {context_trials}
-
+    {custom_instructions_block}
     [INSTRUCTIONS]
     For EACH historical trial provided above, estimate a Similarity Score (0 to 100) and provide a short 1-2 sentence explanation in English of why it matches or differs.
     Return the result strictly as a valid JSON array of objects. Do not wrap it in markdown code blocks. Do not include any other conversational text.
